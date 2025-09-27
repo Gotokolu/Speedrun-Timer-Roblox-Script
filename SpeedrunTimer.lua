@@ -1,3 +1,4 @@
+-- Best Speedrun Timer Script
 --// Services
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -22,10 +23,7 @@ frame.Parent = screenGui
 
 -- Gradient + Stroke + Coins
 local frameGradient = Instance.new("UIGradient")
-frameGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(35,25,55)), 
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(25,20,35))
-}
+frameGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(35,25,55)), ColorSequenceKeypoint.new(1, Color3.fromRGB(25,20,35))}
 frameGradient.Rotation = 90
 frameGradient.Parent = frame
 
@@ -61,10 +59,7 @@ titleBar.BorderSizePixel = 0
 titleBar.Parent = frame
 
 local titleGradient = Instance.new("UIGradient")
-titleGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(45,35,65)), 
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(35,25,55))
-}
+titleGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(45,35,65)), ColorSequenceKeypoint.new(1, Color3.fromRGB(35,25,55))}
 titleGradient.Rotation = 90
 titleGradient.Parent = titleBar
 
@@ -83,11 +78,11 @@ title.TextTransparency = 1
 title.Parent = titleBar
 
 -- Fonctions boutons de contrôle (X, Fullscreen, Minimize)
-local function createControlBtn(txt, pos)
+local function createControlBtn(txt, pos, color)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(0.15,0,1,0)
     btn.Position = pos
-    btn.BackgroundColor3 = Color3.fromRGB(120,60,200)
+    btn.BackgroundColor3 = color
     btn.BackgroundTransparency = 1
     btn.Text = txt
     btn.TextScaled = true
@@ -109,9 +104,9 @@ local function createControlBtn(txt, pos)
     return btn
 end
 
-local fullscreenBtn = createControlBtn("⬜", UDim2.new(0.55,0,0,0))
-local minimizeBtn = createControlBtn("-", UDim2.new(0.7,0,0,0))
-local closeBtn = createControlBtn("X", UDim2.new(0.85,0,0,0))
+local fullscreenBtn = createControlBtn("⬜", UDim2.new(0.55,0,0,0), Color3.fromRGB(90,40,150))
+local minimizeBtn = createControlBtn("-", UDim2.new(0.7,0,0,0), Color3.fromRGB(120,60,200))
+local closeBtn = createControlBtn("X", UDim2.new(0.85,0,0,0), Color3.fromRGB(180,60,200))
 
 -- Label Timer
 local timerLabel = Instance.new("TextLabel")
@@ -167,19 +162,24 @@ local function stopTimer()
     end
 end
 
+-- Fonction Split corrigée
 local function splitTimer()
     if running then
         local currentTime = os.clock() - startTime
         splitCount = splitCount + 1
+
         local splitLabel = Instance.new("TextLabel")
-        splitLabel.Size = UDim2.new(1,0,0,20)
+        splitLabel.Size = UDim2.new(1, -10, 0, 25)
+        splitLabel.Position = UDim2.new(0, 5, 0, 0)
         splitLabel.BackgroundTransparency = 1
         splitLabel.TextColor3 = Color3.fromRGB(200,180,255)
         splitLabel.Font = Enum.Font.Gotham
         splitLabel.TextScaled = true
+        splitLabel.TextXAlignment = Enum.TextXAlignment.Left
         splitLabel.Text = string.format("Split %d: %s", splitCount, formatTime(currentTime))
         splitLabel.Parent = splitsFrame
-        splitsFrame.CanvasSize = UDim2.new(0,0,0,splitsLayout.AbsoluteContentSize.Y)
+
+        splitsFrame.CanvasSize = UDim2.new(0, 0, 0, splitsLayout.AbsoluteContentSize.Y)
     end
 end
 
@@ -222,77 +222,4 @@ local splitBtn = createTimerButton("⏺ Split", UDim2.new(0.26,0,0.45,0))
 local stopBtn = createTimerButton("⏸ Stop", UDim2.new(0.49,0,0.45,0))
 local resetBtn = createTimerButton("🔄 Reset", UDim2.new(0.72,0,0.45,0))
 
-startBtn.MouseButton1Click:Connect(startTimer)
-splitBtn.MouseButton1Click:Connect(splitTimer)
-stopBtn.MouseButton1Click:Connect(stopTimer)
-resetBtn.MouseButton1Click:Connect(resetTimer)
-
--- Raccourcis clavier
-UserInputService.InputBegan:Connect(function(input, processed)
-    if processed then return end
-    if input.KeyCode == Enum.KeyCode.Space then
-        if running then stopTimer() else startTimer() end
-    elseif input.KeyCode == Enum.KeyCode.S then
-        splitTimer()
-    elseif input.KeyCode == Enum.KeyCode.R then
-        resetTimer()
-    end
-end)
-
--- Fade-in global
-local fadeInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-TweenService:Create(frame,fadeInfo,{BackgroundTransparency=0}):Play()
-TweenService:Create(titleBar,fadeInfo,{BackgroundTransparency=0}):Play()
-TweenService:Create(timerLabel,fadeInfo,{TextTransparency=0}):Play()
-TweenService:Create(splitsFrame,fadeInfo,{BackgroundTransparency=0}):Play()
-TweenService:Create(title,fadeInfo,{TextTransparency=0}):Play()
-TweenService:Create(startBtn,fadeInfo,{BackgroundTransparency=0}):Play()
-TweenService:Create(splitBtn,fadeInfo,{BackgroundTransparency=0}):Play()
-TweenService:Create(stopBtn,fadeInfo,{BackgroundTransparency=0}):Play()
-TweenService:Create(resetBtn,fadeInfo,{BackgroundTransparency=0}):Play()
-TweenService:Create(fullscreenBtn,fadeInfo,{BackgroundTransparency=0,TextTransparency=0}):Play()
-TweenService:Create(minimizeBtn,fadeInfo,{BackgroundTransparency=0,TextTransparency=0}):Play()
-TweenService:Create(closeBtn,fadeInfo,{BackgroundTransparency=0,TextTransparency=0}):Play()
-
---// Boutons de contrôle fonctionnels
-
--- Fermer
-closeBtn.MouseButton1Click:Connect(function()
-    screenGui:Destroy()
-end)
-
--- Minimiser
-local minimized = false
-minimizeBtn.MouseButton1Click:Connect(function()
-    minimized = not minimized
-    if minimized then
-        frame.Size = UDim2.new(0.3,0,0.05,0)
-        splitsFrame.Visible = false
-        timerLabel.Visible = false
-        startBtn.Visible = false
-        splitBtn.Visible = false
-        stopBtn.Visible = false
-        resetBtn.Visible = false
-    else
-        frame.Size = UDim2.new(0.5,0,0.4,0)
-        splitsFrame.Visible = true
-        timerLabel.Visible = true
-        startBtn.Visible = true
-        splitBtn.Visible = true
-        stopBtn.Visible = true
-        resetBtn.Visible = true
-    end
-end)
-
--- Agrandir / Toggle
-local fullScreen = false
-fullscreenBtn.MouseButton1Click:Connect(function()
-    fullScreen = not fullScreen
-    if fullScreen then
-        frame.Size = UDim2.new(0.8,0,0.6,0)
-        frame.Position = UDim2.new(0.1,0,0.2,0)
-    else
-        frame.Size = UDim2.new(0.5,0,0.4,0)
-        frame.Position = UDim2.new(0.25,0,0.2,0)
-    end
-end)
+startBtn
