@@ -208,8 +208,4 @@ UserInputService.InputBegan:Connect(function(input,processed)
     elseif input.KeyCode==Enum.KeyCode.R then
         resetTimer()
     end
-end)
-
--- Fade-in
-local fade = TweenInfo.new(0.5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
-TweenService:Create(frame,
+    end
